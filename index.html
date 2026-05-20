@@ -1,0 +1,2151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Persona — How It Works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ═══════════════════════════════════════════════════════════════
+     PERSONA · How It Works — Editorial Walkthrough
+     Aesthetic: dark editorial tech, serif display + modern sans,
+     Midnight Amber palette, refined and restrained.
+     ═══════════════════════════════════════════════════════════════ */
+
+  :root{
+    --bg:#0a0e14;
+    --bg-lift:#11161e;
+    --bg-card:#161c26;
+    --bg-deep:#070a0f;
+
+    --line:#232b3a;
+    --line-soft:#1c2330;
+    --line-bright:#3a4358;
+
+    --text:#f0e8d6;          /* warm off-white */
+    --text-mute:#a2a8b6;
+    --text-quiet:#5d6678;
+    --text-faint:#3a4150;
+
+    --amber:#d4a356;
+    --amber-bright:#eac57f;
+    --amber-soft:rgba(212,163,86,.10);
+    --amber-line:rgba(212,163,86,.25);
+
+    --rose:#c97a99;
+    --rose-soft:rgba(201,122,153,.10);
+
+    --jade:#7ab290;
+    --jade-soft:rgba(122,178,144,.10);
+
+    --lav:#968ec7;
+    --lav-soft:rgba(150,142,199,.10);
+
+    --copper:#c08560;
+    --copper-soft:rgba(192,133,96,.10);
+
+    --serif:'Instrument Serif', 'Times New Roman', serif;
+    --sans:'Geist','Söhne',-apple-system,system-ui,sans-serif;
+    --mono:'Geist Mono','SF Mono',ui-monospace,monospace;
+
+    --max:1240px;
+    --gutter:32px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    font-weight:400;
+    font-feature-settings:"ss01","cv01","cv02";
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    letter-spacing:-.005em;
+  }
+
+  /* ─── Atmospheric backdrop ─── */
+  body::before{
+    content:'';position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(ellipse 800px 400px at 12% 18%, rgba(212,163,86,.06), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 88% 75%, rgba(201,122,153,.04), transparent 65%),
+      radial-gradient(ellipse 600px 600px at 50% 50%, rgba(150,142,199,.03), transparent 70%);
+  }
+  body::after{
+    content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background-image:radial-gradient(rgba(255,255,255,.02) 1px, transparent 1px);
+    background-size:24px 24px;
+    mask-image:radial-gradient(ellipse at center, black 25%, transparent 75%);
+    opacity:.7;
+  }
+
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--amber);color:var(--bg)}
+
+  /* Scrollbar */
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--line-bright)}
+
+  /* ═════════ TYPOGRAPHY ═════════ */
+  .serif{font-family:var(--serif);font-weight:400;letter-spacing:-.02em}
+  .italic{font-style:italic}
+  .mono{font-family:var(--mono);font-size:.86em}
+  .uppercase{text-transform:uppercase;letter-spacing:.18em;font-size:.7rem;font-weight:500}
+
+  h1.display{
+    font-family:var(--serif);font-weight:400;
+    font-size:clamp(3.5rem,9vw,8.5rem);
+    line-height:.95;letter-spacing:-.035em;
+    color:var(--text);
+  }
+  h1.display .it{font-style:italic;color:var(--amber-bright)}
+  h2.chapter{
+    font-family:var(--serif);font-weight:400;
+    font-size:clamp(2.5rem,6vw,5.5rem);
+    line-height:1;letter-spacing:-.03em;
+    color:var(--text);
+  }
+  h2.chapter .it{font-style:italic;color:var(--amber-bright)}
+  h3{
+    font-family:var(--sans);font-weight:600;
+    font-size:1.05rem;letter-spacing:-.005em;
+    color:var(--text);
+  }
+  h4{
+    font-family:var(--sans);font-weight:500;
+    font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--text-quiet);
+  }
+  .lede{
+    font-family:var(--serif);font-style:italic;
+    font-size:clamp(1.25rem,2vw,1.55rem);
+    line-height:1.45;color:var(--text-mute);
+    max-width:680px;
+  }
+
+  /* ═════════ NAV ═════════ */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:80;
+    backdrop-filter:blur(20px) saturate(160%);
+    background:rgba(10,14,20,.6);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .nav-inner{
+    max-width:var(--max);margin:0 auto;
+    padding:18px var(--gutter);
+    display:flex;align-items:center;justify-content:space-between;gap:24px;
+  }
+  .brand{
+    display:flex;align-items:center;gap:14px;
+    font-family:var(--sans);font-weight:500;font-size:.95rem;
+  }
+  .brand-mark{
+    width:28px;height:28px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--amber-bright), var(--amber) 45%, var(--copper) 100%);
+    box-shadow:0 0 30px rgba(212,163,86,.4), inset 0 0 0 1px rgba(255,255,255,.1);
+  }
+  .brand-meta{
+    color:var(--text-quiet);font-size:.82rem;
+    border-left:1px solid var(--line);padding-left:14px;
+  }
+  .brand-meta em{font-family:var(--serif);font-style:italic;color:var(--amber);font-size:.95rem}
+
+  .nav-progress{
+    display:flex;align-items:center;gap:14px;
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.05em;
+    color:var(--text-quiet);
+  }
+  .nav-progress .bar{
+    width:120px;height:1px;background:var(--line);position:relative;overflow:hidden;
+  }
+  .nav-progress .bar::after{
+    content:'';position:absolute;left:0;top:0;height:100%;
+    background:var(--amber);width:var(--p,0%);transition:width .3s ease;
+  }
+
+  /* ═════════ LAYOUT ═════════ */
+  section{
+    max-width:var(--max);margin:0 auto;
+    padding:140px var(--gutter);
+    position:relative;
+  }
+  @media(max-width:700px){section{padding:90px 22px}}
+
+  /* ═════════ HERO ═════════ */
+  .hero{
+    min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+    padding-top:160px;padding-bottom:100px;
+  }
+  .hero-meta{
+    display:flex;align-items:center;gap:18px;margin-bottom:48px;
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;
+    color:var(--text-quiet);text-transform:uppercase;
+  }
+  .hero-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--amber)}
+  .hero-meta .div{width:30px;height:1px;background:var(--line)}
+  .hero h1.display{margin-bottom:48px;max-width:14ch}
+  .hero p.lede{font-size:clamp(1.4rem,2.2vw,1.85rem);max-width:720px;margin-bottom:80px}
+
+  .hero-stats{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+    border-top:1px solid var(--line);padding-top:32px;
+  }
+  @media(max-width:780px){.hero-stats{grid-template-columns:repeat(2,1fr);gap:24px;border:none;padding:0}}
+  .hero-stat{padding:0 22px;border-left:1px solid var(--line)}
+  .hero-stat:first-child{padding-left:0;border-left:none}
+  .hero-stat .num{
+    font-family:var(--serif);font-size:3rem;line-height:1;color:var(--amber-bright);
+    margin-bottom:8px;
+  }
+  .hero-stat .num .it{font-style:italic}
+  .hero-stat .lbl{
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--text-quiet);
+  }
+  .hero-stat .sub{font-size:.82rem;color:var(--text-mute);margin-top:4px}
+
+  /* ═════════ PHASE CHAPTER LAYOUT ═════════ */
+  .chapter-rule{
+    display:flex;align-items:baseline;gap:24px;
+    margin-bottom:48px;padding-bottom:32px;
+    border-bottom:1px solid var(--line);
+  }
+  .chapter-num{
+    font-family:var(--serif);font-size:clamp(4rem,10vw,8rem);
+    line-height:.85;color:var(--text);
+    font-feature-settings:"lnum";letter-spacing:-.04em;
+  }
+  .chapter-num .it{font-style:italic;color:var(--amber)}
+  .chapter-num .slash{
+    color:var(--text-faint);font-style:normal;font-size:.5em;
+    vertical-align:middle;margin:0 6px;
+  }
+  .chapter-tag{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--text-quiet);
+    padding-bottom:8px;
+  }
+  .chapter-tag .accent{color:var(--amber)}
+
+  .chapter-intro{
+    display:grid;grid-template-columns:5fr 7fr;gap:60px;margin-bottom:80px;
+    align-items:start;
+  }
+  @media(max-width:840px){.chapter-intro{grid-template-columns:1fr;gap:30px}}
+  .chapter-intro h2.chapter{margin-bottom:20px}
+
+  /* ═════════ STAGE — phone mockup + dual narration ═════════ */
+  .stage{
+    display:grid;
+    grid-template-columns:320px 1fr;
+    gap:60px;
+    margin-bottom:64px;
+    align-items:start;
+  }
+  @media(max-width:920px){.stage{grid-template-columns:1fr;justify-items:center}}
+
+  /* ═════════ iPHONE MOCKUP ═════════ */
+  .phone{
+    width:300px;height:622px;
+    background:linear-gradient(145deg, #1a1d24, #0d1015);
+    border-radius:46px;padding:7px;
+    position:relative;
+    box-shadow:
+      0 50px 100px -30px rgba(0,0,0,.8),
+      0 20px 40px -10px rgba(0,0,0,.5),
+      inset 0 0 0 1px rgba(255,255,255,.04),
+      0 0 0 1.5px #2a2f3a;
+    transition:transform .6s cubic-bezier(.2,.8,.2,1);
+  }
+  .phone:hover{transform:translateY(-6px) rotate(-1deg)}
+  .phone::before{
+    content:'';position:absolute;
+    top:12px;left:50%;transform:translateX(-50%);
+    width:108px;height:30px;background:#000;border-radius:18px;z-index:5;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
+  }
+  .phone::after{
+    content:'';position:absolute;
+    top:28px;right:88px;width:8px;height:8px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #2a3340, #050608);
+    z-index:6;
+  }
+  .screen{
+    width:100%;height:100%;background:var(--bg);
+    border-radius:40px;overflow:hidden;
+    position:relative;
+    display:flex;flex-direction:column;
+  }
+  .status-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 26px 8px;height:54px;flex-shrink:0;
+    font-family:var(--sans);font-weight:600;font-size:.72rem;
+    color:var(--text);
+  }
+  .status-bar .icons{display:flex;gap:5px;align-items:center}
+  .status-bar svg{display:block}
+
+  /* Tab bar at bottom of phone */
+  .tab-bar{
+    display:flex;justify-content:space-around;align-items:center;
+    padding:10px 12px 24px;border-top:1px solid var(--line-soft);
+    background:rgba(10,14,20,.6);backdrop-filter:blur(20px);
+    flex-shrink:0;
+  }
+  .tab-item{
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    font-size:.55rem;color:var(--text-quiet);font-weight:500;
+  }
+  .tab-item.active{color:var(--amber)}
+  .tab-item .ico{
+    width:22px;height:22px;display:flex;align-items:center;justify-content:center;
+    font-size:1.05rem;
+  }
+
+  /* Phone content area */
+  .phone-body{
+    flex:1;padding:6px 18px 14px;
+    display:flex;flex-direction:column;gap:10px;
+    overflow:hidden;
+  }
+  .ph-title{
+    font-family:var(--serif);font-size:1.4rem;color:var(--text);
+    margin-bottom:4px;letter-spacing:-.02em;
+  }
+  .ph-sub{font-size:.7rem;color:var(--text-mute);margin-bottom:10px}
+  .ph-field{
+    background:var(--bg-card);border:1px solid var(--line-soft);
+    border-radius:10px;padding:11px 14px;font-size:.72rem;
+    color:var(--text-mute);
+  }
+  .ph-field.amber{
+    border-color:var(--amber);background:var(--amber-soft);color:var(--amber-bright);
+  }
+  .ph-btn{
+    background:var(--amber);color:#1a1308;
+    text-align:center;border-radius:12px;
+    padding:13px;font-weight:600;font-size:.78rem;
+    margin-top:auto;
+  }
+  .ph-btn.ghost{background:transparent;color:var(--amber);border:1px solid var(--amber-line)}
+  .ph-check{
+    display:flex;align-items:center;gap:10px;font-size:.68rem;color:var(--text-mute);
+    padding:8px 0;
+  }
+  .ph-check .box{
+    width:16px;height:16px;border-radius:4px;border:1.5px solid var(--line-bright);
+    flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    font-size:.6rem;
+  }
+  .ph-check.on .box{background:var(--amber);border-color:var(--amber);color:#1a1308}
+
+  .ph-bubble{
+    padding:9px 13px;border-radius:14px;font-size:.7rem;line-height:1.45;
+    max-width:78%;
+  }
+  .ph-bubble.them{background:var(--bg-card);border-bottom-left-radius:5px;align-self:flex-start;color:var(--text)}
+  .ph-bubble.me{background:var(--amber);color:#1a1308;border-bottom-right-radius:5px;align-self:flex-end;font-weight:500}
+  .ph-tag{
+    font-family:var(--mono);font-size:.55rem;letter-spacing:.1em;
+    color:var(--text-quiet);text-transform:uppercase;
+    margin:6px 4px 2px;font-weight:500;
+  }
+
+  /* Discovery card mockup */
+  .ph-card{
+    background:var(--bg-card);border:1px solid var(--line-soft);
+    border-radius:14px;padding:14px;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .ph-card-row{display:flex;align-items:center;gap:10px}
+  .ph-avatar{
+    width:38px;height:38px;border-radius:50%;
+    background:linear-gradient(135deg,var(--rose),var(--lav));
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--serif);font-size:1rem;color:#fff;font-style:italic;
+    flex-shrink:0;
+  }
+  .ph-avatar.amber{background:linear-gradient(135deg,var(--amber),var(--copper))}
+  .ph-avatar.jade{background:linear-gradient(135deg,var(--jade),#5a8d70)}
+  .ph-name{font-size:.78rem;font-weight:600;color:var(--text)}
+  .ph-meta{font-size:.62rem;color:var(--text-quiet)}
+  .ph-score{
+    margin-left:auto;font-family:var(--serif);font-style:italic;
+    font-size:1.4rem;color:var(--amber-bright);line-height:1;
+  }
+  .ph-themes{display:flex;flex-wrap:wrap;gap:5px}
+  .ph-theme{
+    padding:3px 8px;border-radius:999px;font-size:.55rem;
+    background:var(--lav-soft);color:var(--lav);font-weight:500;
+  }
+
+  /* AI preview block */
+  .ph-ai-preview{
+    background:linear-gradient(180deg, rgba(212,163,86,.06), transparent 60%);
+    border:1px solid var(--amber-line);border-radius:12px;
+    padding:10px;display:flex;flex-direction:column;gap:7px;
+  }
+  .ph-ai-tag{
+    font-family:var(--mono);font-size:.5rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--amber);font-weight:600;
+  }
+  .ph-mini-bubble{
+    font-size:.62rem;line-height:1.4;color:var(--text-mute);
+    padding-left:8px;border-left:1.5px solid var(--line);
+  }
+  .ph-mini-bubble.a{border-color:var(--amber)}
+  .ph-mini-bubble.b{border-color:var(--rose)}
+
+  /* ═════════ NARRATION COLUMNS ═════════ */
+  .narration{
+    display:grid;grid-template-columns:1fr 1fr;gap:24px;
+    align-self:start;
+  }
+  @media(max-width:1100px){.narration{grid-template-columns:1fr}}
+
+  .col{
+    background:var(--bg-card);border:1px solid var(--line-soft);
+    border-radius:16px;padding:28px;
+    position:relative;
+    transition:border-color .3s, transform .3s;
+  }
+  .col:hover{transform:translateY(-3px)}
+  .col.layman{border-color:var(--amber-line)}
+  .col.layman:hover{border-color:var(--amber)}
+  .col.tech{border-color:rgba(150,142,199,.20)}
+  .col.tech:hover{border-color:var(--lav)}
+
+  .col-tag{
+    display:inline-flex;align-items:center;gap:8px;
+    margin-bottom:18px;
+    font-family:var(--mono);font-size:.65rem;letter-spacing:.16em;
+    text-transform:uppercase;font-weight:500;
+  }
+  .col.layman .col-tag{color:var(--amber)}
+  .col.tech   .col-tag{color:var(--lav)}
+  .col-tag::before{
+    content:'';width:18px;height:1px;
+  }
+  .col.layman .col-tag::before{background:var(--amber)}
+  .col.tech   .col-tag::before{background:var(--lav)}
+
+  .col h3{margin-bottom:14px;font-size:1.1rem}
+  .col ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+  .col li{
+    display:flex;gap:12px;font-size:.92rem;
+    line-height:1.5;color:var(--text-mute);
+  }
+  .col li::before{
+    content:'';flex-shrink:0;width:5px;height:5px;border-radius:50%;
+    margin-top:8px;
+  }
+  .col.layman li::before{background:var(--amber)}
+  .col.tech   li::before{background:var(--lav)}
+  .col li strong{color:var(--text);font-weight:600}
+  .col li .mono{
+    background:var(--bg-deep);padding:1px 6px;border-radius:5px;
+    color:var(--amber-bright);font-size:.82em;font-weight:500;
+  }
+  .col.tech li .mono{color:var(--lav)}
+
+  /* ═════════ TABLE GLOSSARY ═════════ */
+  .glossary{
+    background:var(--bg-card);border:1px solid var(--line-soft);
+    border-radius:16px;padding:32px;margin-top:32px;
+  }
+  .glossary-head{
+    display:flex;align-items:baseline;gap:20px;margin-bottom:24px;
+    padding-bottom:20px;border-bottom:1px solid var(--line);
+  }
+  .glossary-head .num{
+    font-family:var(--serif);font-size:2.5rem;line-height:.85;color:var(--amber);
+    font-style:italic;
+  }
+  .glossary-head h3{font-size:1.3rem;font-weight:500;font-family:var(--serif);letter-spacing:-.01em}
+  .glossary-head .sub{font-size:.82rem;color:var(--text-quiet);margin-top:2px}
+
+  .gloss-list{display:flex;flex-direction:column;gap:18px}
+  .gloss-row{
+    display:grid;grid-template-columns:auto 1fr 2fr;gap:18px;align-items:start;
+    padding:14px 0;border-top:1px solid var(--line-soft);
+  }
+  .gloss-row:first-child{border-top:none}
+  @media(max-width:780px){.gloss-row{grid-template-columns:1fr;gap:6px}}
+  .gloss-icon{
+    font-family:var(--serif);font-style:italic;font-size:1.4rem;
+    color:var(--amber-bright);width:32px;text-align:center;line-height:1;margin-top:3px;
+  }
+  .gloss-table{
+    font-family:var(--mono);font-size:.85rem;font-weight:500;
+    color:var(--text);letter-spacing:-.005em;
+    padding-top:3px;
+  }
+  .gloss-table .like{
+    display:block;font-family:var(--serif);font-style:italic;
+    font-size:.95rem;color:var(--text-mute);font-weight:400;letter-spacing:0;margin-top:2px;
+  }
+  .gloss-desc{font-size:.9rem;color:var(--text-mute);line-height:1.55;padding-top:4px}
+
+  /* ═════════ DIAGRAM ═════════ */
+  .diagram-wrap{
+    background:linear-gradient(180deg, var(--bg-lift), var(--bg-card));
+    border:1px solid var(--line-soft);border-radius:18px;
+    padding:36px;margin-top:32px;
+    overflow-x:auto;
+  }
+  .diagram-head{
+    display:flex;align-items:center;gap:14px;
+    margin-bottom:24px;padding-bottom:18px;
+    border-bottom:1px dashed var(--line);
+  }
+  .diagram-head h4{margin:0}
+  .diagram-head::before{
+    content:'';width:8px;height:8px;border-radius:50%;background:var(--amber);
+    box-shadow:0 0 12px var(--amber);
+  }
+  .diagram-head .right{
+    margin-left:auto;font-family:var(--mono);font-size:.7rem;
+    color:var(--text-quiet);letter-spacing:.05em;
+  }
+  .mermaid{
+    display:flex;justify-content:center;background:transparent;min-height:160px;
+  }
+
+  /* ═════════ RULE / CALLOUT ═════════ */
+  .rule{
+    display:grid;grid-template-columns:auto 1fr;gap:22px;
+    align-items:start;
+    padding:24px 30px;margin:24px 0;
+    background:var(--bg-lift);border:1px solid var(--line-soft);
+    border-left:3px solid var(--amber);
+    border-radius:0 12px 12px 0;
+  }
+  .rule.rose{border-left-color:var(--rose)}
+  .rule.jade{border-left-color:var(--jade)}
+  .rule.lav {border-left-color:var(--lav)}
+  .rule-label{
+    font-family:var(--serif);font-style:italic;font-size:1.4rem;
+    color:var(--amber);line-height:1.2;padding-top:1px;
+  }
+  .rule.rose .rule-label{color:var(--rose)}
+  .rule.jade .rule-label{color:var(--jade)}
+  .rule.lav  .rule-label{color:var(--lav)}
+  .rule-body{font-size:.97rem;color:var(--text-mute);line-height:1.6}
+  .rule-body strong{color:var(--text);font-weight:600}
+
+  /* ═════════ ACCORDION ═════════ */
+  details.deep{
+    margin:18px 0;background:transparent;
+    border-top:1px solid var(--line);
+  }
+  details.deep summary{
+    cursor:pointer;list-style:none;
+    padding:22px 0;display:flex;justify-content:space-between;align-items:baseline;
+    font-family:var(--serif);font-style:italic;font-size:1.2rem;
+    color:var(--text);transition:color .2s;
+  }
+  details.deep summary:hover{color:var(--amber)}
+  details.deep summary::-webkit-details-marker{display:none}
+  details.deep summary::after{
+    content:'+';font-family:var(--sans);font-size:1.3rem;
+    color:var(--text-quiet);transition:transform .3s, color .2s;
+  }
+  details.deep[open] summary::after{transform:rotate(45deg);color:var(--amber)}
+  details.deep .body{
+    padding:0 0 28px;color:var(--text-mute);font-size:.95rem;line-height:1.7;
+  }
+  details.deep .body p{margin-bottom:14px}
+  details.deep .body .mono{
+    background:var(--bg-deep);padding:1px 6px;border-radius:5px;
+    color:var(--amber);font-size:.85em;font-weight:500;
+  }
+  details.deep .body pre{
+    background:var(--bg-deep);border:1px solid var(--line-soft);
+    border-radius:10px;padding:18px;margin:14px 0;
+    color:var(--text);font-family:var(--mono);font-size:.82rem;
+    overflow-x:auto;line-height:1.6;
+  }
+
+  /* ═════════ ARCHITECTURE GRID ═════════ */
+  .arch-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:28px;margin-top:48px;
+  }
+  @media(max-width:840px){.arch-grid{grid-template-columns:1fr}}
+  .arch-card{
+    background:var(--bg-card);border:1px solid var(--line-soft);
+    border-radius:18px;padding:32px;
+    transition:all .3s;
+  }
+  .arch-card:hover{border-color:var(--amber);transform:translateY(-4px)}
+  .arch-card .num{
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;
+    color:var(--amber);margin-bottom:14px;font-weight:500;
+  }
+  .arch-card h3{
+    font-family:var(--serif);font-size:1.6rem;font-weight:400;
+    letter-spacing:-.01em;margin-bottom:14px;
+  }
+  .arch-card p{font-size:.92rem;color:var(--text-mute);line-height:1.6;margin-bottom:14px}
+  .arch-card .tags{
+    display:flex;flex-wrap:wrap;gap:6px;padding-top:14px;
+    border-top:1px solid var(--line-soft);
+  }
+  .arch-card .tag{
+    padding:4px 10px;border-radius:6px;font-family:var(--mono);font-size:.7rem;
+    background:var(--bg-deep);color:var(--text-mute);
+  }
+
+  /* ═════════ TIMELINE (Persona AI) ═════════ */
+  .timeline-wrap{margin-top:60px;position:relative}
+  .timeline-line{
+    position:absolute;left:0;right:0;top:34px;height:1px;
+    background:linear-gradient(90deg, var(--jade) 0%, var(--jade) 20%, var(--amber) 20%, var(--amber) 40%, var(--line) 40%);
+  }
+  .timeline{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:0;
+    position:relative;
+  }
+  @media(max-width:920px){
+    .timeline{grid-template-columns:1fr;gap:24px}
+    .timeline-line{display:none}
+  }
+  .t-step{padding:60px 18px 0;position:relative}
+  .t-step:not(:first-child){border-left:1px solid var(--line)}
+  @media(max-width:920px){.t-step:not(:first-child){border-left:none;padding:0;border-top:1px solid var(--line);padding-top:24px}}
+  .t-step::before{
+    content:'';position:absolute;top:28px;left:18px;
+    width:14px;height:14px;border-radius:50%;
+    background:var(--bg);border:2px solid var(--line-bright);
+  }
+  @media(max-width:920px){.t-step::before{display:none}}
+  .t-step.done::before{background:var(--jade);border-color:var(--jade);box-shadow:0 0 16px var(--jade-soft)}
+  .t-step.next::before{background:var(--amber);border-color:var(--amber);box-shadow:0 0 16px var(--amber-soft)}
+  .t-step .ph-num{
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;
+    color:var(--text-quiet);margin-bottom:8px;font-weight:500;text-transform:uppercase;
+  }
+  .t-step.done .ph-num{color:var(--jade)}
+  .t-step.next .ph-num{color:var(--amber)}
+  .t-step h4{
+    font-family:var(--serif);font-size:1.4rem;font-weight:400;
+    letter-spacing:-.01em;color:var(--text);
+    margin-bottom:8px;text-transform:none;
+  }
+  .t-step p{font-size:.86rem;color:var(--text-mute);line-height:1.55;margin-bottom:12px}
+  .t-step .stamp{
+    font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;
+    color:var(--text-quiet);text-transform:uppercase;
+  }
+  .t-step.done .stamp{color:var(--jade)}
+  .t-step.next .stamp{color:var(--amber)}
+
+  /* ═════════ FOOTER ═════════ */
+  footer{
+    border-top:1px solid var(--line);margin-top:80px;
+    padding:80px var(--gutter);text-align:center;
+    color:var(--text-quiet);font-size:.85rem;
+  }
+  footer .big{
+    font-family:var(--serif);font-style:italic;font-size:2.2rem;
+    color:var(--text);margin-bottom:14px;letter-spacing:-.02em;
+  }
+  footer .big .accent{color:var(--amber)}
+
+  /* ═════════ REVEAL ANIM ═════════ */
+  .reveal{opacity:0;transform:translateY(32px);transition:opacity .9s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.2,.8,.2,1)}
+  .reveal.in{opacity:1;transform:translateY(0)}
+  .reveal.delay-1{transition-delay:.1s}
+  .reveal.delay-2{transition-delay:.2s}
+  .reveal.delay-3{transition-delay:.3s}
+
+  /* ═════════ PHASE-COLOR ACCENT VARIANTS ═════════ */
+  .accent-rose .chapter-num .it,
+  .accent-rose .chapter-tag .accent,
+  .accent-rose .col.layman .col-tag,
+  .accent-rose .gloss-icon,
+  .accent-rose .glossary-head .num,
+  .accent-rose h1.display .it,
+  .accent-rose h2.chapter .it{color:var(--rose)}
+  .accent-rose .col.layman{border-color:rgba(201,122,153,.25)}
+  .accent-rose .col.layman:hover{border-color:var(--rose)}
+  .accent-rose .col.layman li::before{background:var(--rose)}
+
+  .accent-jade .chapter-num .it,
+  .accent-jade .chapter-tag .accent,
+  .accent-jade .col.layman .col-tag,
+  .accent-jade .gloss-icon,
+  .accent-jade .glossary-head .num,
+  .accent-jade h2.chapter .it{color:var(--jade)}
+  .accent-jade .col.layman{border-color:rgba(122,178,144,.25)}
+  .accent-jade .col.layman:hover{border-color:var(--jade)}
+  .accent-jade .col.layman li::before{background:var(--jade)}
+
+  .accent-lav  .chapter-num .it,
+  .accent-lav  .chapter-tag .accent,
+  .accent-lav  .col.layman .col-tag,
+  .accent-lav  .gloss-icon,
+  .accent-lav  .glossary-head .num,
+  .accent-lav  h2.chapter .it{color:var(--lav)}
+  .accent-lav .col.layman{border-color:rgba(150,142,199,.25)}
+  .accent-lav .col.layman:hover{border-color:var(--lav)}
+  .accent-lav .col.layman li::before{background:var(--lav)}
+
+  .accent-copper .chapter-num .it,
+  .accent-copper .chapter-tag .accent,
+  .accent-copper .col.layman .col-tag,
+  .accent-copper .gloss-icon,
+  .accent-copper .glossary-head .num,
+  .accent-copper h2.chapter .it{color:var(--copper)}
+  .accent-copper .col.layman{border-color:rgba(192,133,96,.25)}
+  .accent-copper .col.layman:hover{border-color:var(--copper)}
+  .accent-copper .col.layman li::before{background:var(--copper)}
+</style>
+</head>
+<body>
+
+<!-- ═════════════════════════════════════════════════════════════════ NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <span>Persona</span>
+      <span class="brand-meta">A walkthrough · <em>How it really works</em></span>
+    </div>
+    <div class="nav-progress">
+      <span id="navStep">01 / 09</span>
+      <div class="bar"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ═════════════════════════════════════════════════════════════════ HERO -->
+<section id="hero" class="hero">
+  <div class="hero-meta reveal in">
+    <div class="dot"></div>
+    <span>Tarsit Group</span>
+    <div class="div"></div>
+    <span>iOS Dating · SwiftUI · Supabase · Claude</span>
+    <div class="div"></div>
+    <span>Production-ready · 2026-05-19</span>
+  </div>
+
+  <h1 class="display reveal in delay-1">
+    The dating app where<br>
+    <span class="it">avatars meet</span> first.
+  </h1>
+
+  <p class="lede reflo reveal in delay-2">
+    Before two strangers ever exchange a single word, their AI avatars
+    have already had the conversation. Only chemistry surfaces.
+  </p>
+
+  <div class="hero-stats">
+    <div class="hero-stat reveal in">
+      <div class="num"><span class="it">6</span></div>
+      <div class="lbl">Phases</div>
+      <div class="sub">signup to chat</div>
+    </div>
+    <div class="hero-stat reveal in delay-1">
+      <div class="num">16<span class="it">+</span></div>
+      <div class="lbl">Backend tables</div>
+      <div class="sub">all locked by RLS</div>
+    </div>
+    <div class="hero-stat reveal in delay-2">
+      <div class="num">12<span class="it">/</span>12</div>
+      <div class="lbl">End-to-end tests</div>
+      <div class="sub">green in production</div>
+    </div>
+    <div class="hero-stat reveal in delay-3">
+      <div class="num">~<span class="it">1s</span></div>
+      <div class="lbl">Message latency</div>
+      <div class="sub">verified live</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════════ PHASE 01 — ONBOARDING -->
+<section id="p1">
+  <div class="chapter-rule reveal">
+    <div class="chapter-num"><span class="it">0</span>1<span class="slash">/</span><span style="font-size:.4em;color:var(--text-quiet)">06</span></div>
+    <div class="chapter-tag">Phase <span class="accent">One</span> · Onboarding</div>
+  </div>
+
+  <div class="chapter-intro reveal">
+    <div>
+      <h2 class="chapter">Build the<br><span class="it">avatar.</span></h2>
+    </div>
+    <div>
+      <p class="lede">A new user signs up, accepts the compliance gates, and walks through a guided conversation. By the time it ends, the system has built an AI that speaks the way they do.</p>
+    </div>
+  </div>
+
+  <div class="stage reveal">
+    <!-- Phone mockup -->
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="icons">
+            <svg width="14" height="9" viewBox="0 0 14 9" fill="currentColor"><rect x="0" y="6" width="2" height="3" rx=".5"/><rect x="3" y="4" width="2" height="5" rx=".5"/><rect x="6" y="2" width="2" height="7" rx=".5"/><rect x="9" y="0" width="2" height="9" rx=".5"/></svg>
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1"><path d="M1 4.5C2 3 4.5 1.5 7 1.5s5 1.5 6 3M3 6.5C4 5.5 5.5 4.5 7 4.5s3 1 4 2"/><circle cx="7" cy="8" r="1" fill="currentColor"/></svg>
+            <div style="width:22px;height:10px;border:1px solid currentColor;border-radius:2px;position:relative">
+              <div style="position:absolute;inset:1px;width:65%;background:currentColor;border-radius:1px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-body">
+          <div class="ph-title serif italic">Create<br>your account.</div>
+          <div class="ph-sub">A few seconds. Lifetime of better dates.</div>
+
+          <div class="ph-field">name@email.com</div>
+          <div class="ph-field">••••••••</div>
+
+          <div style="margin-top:8px">
+            <div class="ph-check on">
+              <div class="box">✓</div>
+              <span>I confirm I'm 18 or older.</span>
+            </div>
+            <div class="ph-check on">
+              <div class="box">✓</div>
+              <span>I accept the <u>Terms</u> and <u>Privacy Policy</u>.</span>
+            </div>
+          </div>
+
+          <div class="ph-btn">Create account</div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item active"><div class="ico">⌂</div><span>Home</span></div>
+          <div class="tab-item"><div class="ico">◌</div><span>Chats</span></div>
+          <div class="tab-item"><div class="ico">◐</div><span>You</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="narration">
+      <div class="col layman">
+        <div class="col-tag">For everyone</div>
+        <h3>What the user does</h3>
+        <ul>
+          <li>Taps <strong>Sign in with Apple</strong> or types an email + password.</li>
+          <li>Ticks two boxes: <strong>"I'm 18+"</strong> and <strong>"I accept Terms & Privacy."</strong> Both are required.</li>
+          <li>Picks a <strong>date of birth</strong> from a wheel picker — never types an age in a textbox.</li>
+          <li>Answers <strong>8 to 15 onboarding questions</strong> that read like a chat with a thoughtful friend.</li>
+          <li>Adds <strong>photo, gender, bio, location, voice note</strong>.</li>
+          <li>Gets a final <strong>"Your avatar is ready"</strong> moment.</li>
+        </ul>
+      </div>
+      <div class="col tech">
+        <div class="col-tag">For engineers</div>
+        <h3>What the system does</h3>
+        <ul>
+          <li>Auth: Apple OIDC or Supabase email/password creates a row in <span class="mono">auth.users</span>.</li>
+          <li>Trigger <span class="mono">handle_new_user</span> fans out and creates 6 child rows in one transaction.</li>
+          <li>DOB write hits a trigger that <strong>derives age</strong> and rejects anyone under 18 server-side.</li>
+          <li>Each intro turn hits the <span class="mono">avatar-chat</span> Edge Function in <span class="mono">intro</span> mode.</li>
+          <li>That function fires <strong>two parallel Claude calls</strong> — one for the next question, one for OCEAN extraction.</li>
+          <li>Every Claude round-trip lands in <span class="mono">claude_chat_log</span> for future Persona AI training.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Glossary -->
+  <div class="glossary reveal">
+    <div class="glossary-head">
+      <div class="num">i.</div>
+      <div>
+        <h3>Where this gets stored</h3>
+        <div class="sub">Tables touched in this phase, in plain English.</div>
+      </div>
+    </div>
+    <div class="gloss-list">
+      <div class="gloss-row">
+        <div class="gloss-icon">a</div>
+        <div class="gloss-table">profiles<span class="like">"the people directory"</span></div>
+        <div class="gloss-desc">Name, photo, DOB, bio, gender, location. Public face of each user.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">b</div>
+        <div class="gloss-table">user_settings<span class="like">"per-person preferences"</span></div>
+        <div class="gloss-desc">Discovery toggle, age and distance filters, notification preferences.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">c</div>
+        <div class="gloss-table">onboarding_progress<span class="like">"the milestone tracker"</span></div>
+        <div class="gloss-desc">Marks each of the 4 onboarding steps complete: welcome, personality, avatar, tutorial.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">d</div>
+        <div class="gloss-table">subscriptions<span class="like">"who pays what"</span></div>
+        <div class="gloss-desc">Free vs premium tier. Drives daily Claude budget and feature unlocks.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">e</div>
+        <div class="gloss-table">personality_profiles<span class="like">"the OCEAN scorecard"</span></div>
+        <div class="gloss-desc">Five floating-point numbers: openness, conscientiousness, extraversion, agreeableness, neuroticism.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">f</div>
+        <div class="gloss-table">personality_insights<span class="like">"the trait headlines"</span></div>
+        <div class="gloss-desc">Human-readable cards like "Curious by default," "Direct but kind." Surface in the You tab.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">g</div>
+        <div class="gloss-table">avatars<span class="like">"the AI persona registry"</span></div>
+        <div class="gloss-desc">One row per user. Name, personality summary, status. The "thing" that speaks on the user's behalf in Phase 3.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">h</div>
+        <div class="gloss-table">claude_chat_log<span class="like">"the training diary"</span></div>
+        <div class="gloss-desc">Every single Claude call, captured. The future training corpus for our on-device LLM. (See Phase 09.)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diagram -->
+  <div class="diagram-wrap reveal">
+    <div class="diagram-head">
+      <h4>Sequence — Signup to avatar, end to end</h4>
+      <span class="right">Phase 01 · sequence</span>
+    </div>
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant App as iOS App
+    participant Auth as Supabase Auth
+    participant Trig as handle_new_user
+    participant EF as avatar-chat (Edge)
+    participant CL as Claude Haiku
+    participant DB as Postgres
+
+    U->>App: tap "Sign in with Apple"
+    App->>Auth: Apple OIDC token
+    Auth-->>App: session + user id
+    Auth->>Trig: INSERT auth.users
+    Trig->>DB: INSERT profiles · user_settings · onboarding_progress · subscriptions · user_preferences · identity_verifications
+    U->>App: confirm 18+ · accept T&C
+    U->>App: pick date of birth
+    App->>DB: PATCH profiles.date_of_birth
+    DB->>DB: trigger derives age · rejects if <18
+    loop intro chat × 8-15 turns
+        U->>App: type an answer
+        App->>EF: POST /avatar-chat mode=intro
+        par
+            EF->>CL: build next question
+            EF->>CL: extract OCEAN + traits
+        end
+        CL-->>EF: question + JSON
+        EF->>DB: claude_chat_log × 2 rows
+        EF-->>App: {next_question, extractions}
+        App->>DB: apply extractions → personality_profiles + personality_insights
+    end
+    App->>DB: INSERT avatars (status=active)
+    App-->>U: 🎉 avatar revealed
+    
+</div>
+  </div>
+
+  <div class="rule reveal">
+    <div class="rule-label">Rule.</div>
+    <div class="rule-body">The onboarding chat is the <strong>only</strong> path that writes to <span class="mono">personality_profiles</span>. The avatar reflects the user's own words — never staff curation, never editorial defaults.</div>
+  </div>
+
+  <details class="deep">
+    <summary>How a single intro turn becomes a personality update</summary>
+    <div class="body">
+      <p>Each intro turn fires <strong>two Claude calls in parallel</strong>:</p>
+      <p>① <strong>Question generator</strong> — the system prompt includes the running profile summary and the categories already covered. Returns the next question.</p>
+      <p>② <strong>Extractor</strong> — a separate Claude call reads the user's last answer and returns structured JSON: numeric deltas to each OCEAN dimension, plus communication style, humor, conflict style, attachment style, love languages, core values, interests, deal-breakers, and short memory facts.</p>
+      <p>The client merges deltas into <span class="mono">personality_profiles</span> (clamping each field to [0,1]) and inserts new <span class="mono">personality_insights</span> rows.</p>
+      <p>Both raw Claude calls are also written to <span class="mono">claude_chat_log</span> with token counts, latency, full prompt, and full response.</p>
+    </div>
+  </details>
+
+  <details class="deep">
+    <summary>What compliance gates exist and why</summary>
+    <div class="body">
+      <p><strong>App Store 1.1.4 / 1.3 (age verification).</strong> DOB is the source of truth. A trigger derives <span class="mono">age</span> on every write and rejects anyone under 18 with a <span class="mono">23514 check_violation</span> error.</p>
+      <p><strong>App Store 5.1.1 (privacy + ToS).</strong> Two required checkboxes at signup. Both link to live policy URLs. The "Create account" button is disabled until both are checked.</p>
+      <p><strong>App Store 1.2 (user-generated content).</strong> Block, report, and account-delete are all live. Block enforcement is server-side in the discovery RPC — even if the client forgets to exclude blocked IDs, blocked profiles won't surface.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════════ PHASE 02 — DISCOVERY -->
+<section id="p2" class="accent-rose">
+  <div class="chapter-rule reveal">
+    <div class="chapter-num"><span class="it">0</span>2<span class="slash">/</span><span style="font-size:.4em;color:var(--text-quiet)">06</span></div>
+    <div class="chapter-tag">Phase <span class="accent">Two</span> · Discovery</div>
+  </div>
+
+  <div class="chapter-intro reveal">
+    <div>
+      <h2 class="chapter">Find a<br><span class="it">few good</span> humans.</h2>
+    </div>
+    <div>
+      <p class="lede">No infinite swipe deck. A small, daily handful of candidates surface — filtered by geography, preferences, blocks, and personality compatibility. Quality over quantity, by design.</p>
+    </div>
+  </div>
+
+  <div class="stage reveal">
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="icons">
+            <svg width="14" height="9" viewBox="0 0 14 9" fill="currentColor"><rect x="0" y="6" width="2" height="3" rx=".5"/><rect x="3" y="4" width="2" height="5" rx=".5"/><rect x="6" y="2" width="2" height="7" rx=".5"/><rect x="9" y="0" width="2" height="9" rx=".5"/></svg>
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1"><path d="M1 4.5C2 3 4.5 1.5 7 1.5s5 1.5 6 3M3 6.5C4 5.5 5.5 4.5 7 4.5s3 1 4 2"/><circle cx="7" cy="8" r="1" fill="currentColor"/></svg>
+            <div style="width:22px;height:10px;border:1px solid currentColor;border-radius:2px;position:relative">
+              <div style="position:absolute;inset:1px;width:65%;background:currentColor;border-radius:1px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-body">
+          <div class="ph-tag">Today's matches</div>
+          <div class="ph-title serif italic" style="font-size:1.15rem">Three people<br>your avatar likes.</div>
+
+          <div class="ph-card">
+            <div class="ph-card-row">
+              <div class="ph-avatar amber">B</div>
+              <div>
+                <div class="ph-name">Blair, 27</div>
+                <div class="ph-meta">3 mi · spreadsheets and sailing</div>
+              </div>
+              <div class="ph-score">87</div>
+            </div>
+            <div class="ph-themes">
+              <div class="ph-theme">honesty</div>
+              <div class="ph-theme">curiosity</div>
+              <div class="ph-theme">structure</div>
+            </div>
+            <div class="ph-ai-preview">
+              <div class="ph-ai-tag">Avatars exchanged ·</div>
+              <div class="ph-mini-bubble a">Sailing curious meets spreadsheet calm — how does that combo land?</div>
+              <div class="ph-mini-bubble b">Honestly? It's why I haven't been on a boat. Need a spreadsheet for waves.</div>
+            </div>
+          </div>
+
+          <div class="ph-card">
+            <div class="ph-card-row">
+              <div class="ph-avatar jade">M</div>
+              <div>
+                <div class="ph-name">Marin, 29</div>
+                <div class="ph-meta">8 mi · neighborhood bakery owner</div>
+              </div>
+              <div class="ph-score">82</div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item active"><div class="ico">⌂</div><span>Home</span></div>
+          <div class="tab-item"><div class="ico">◌</div><span>Chats</span></div>
+          <div class="tab-item"><div class="ico">◐</div><span>You</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="narration">
+      <div class="col layman">
+        <div class="col-tag">For everyone</div>
+        <h3>What the user sees</h3>
+        <ul>
+          <li>Opens <strong>Home</strong> → ~5 candidate cards per day on the free tier.</li>
+          <li>Each card teases <strong>shared themes</strong>, a <strong>compatibility score</strong>, and a snippet of the avatar exchange.</li>
+          <li>The deck is intentionally small — when it's exhausted, the screen says <em>"Come back tomorrow."</em></li>
+          <li>Tapping a card opens the full avatar-to-avatar transcript (Phase 3).</li>
+        </ul>
+      </div>
+      <div class="col tech">
+        <div class="col-tag">For engineers</div>
+        <h3>What runs in the database</h3>
+        <ul>
+          <li>Client calls Postgres function <span class="mono">nearby_candidates(p_user_id, lat, lon, ...)</span>.</li>
+          <li>Server applies a filter chain: not self, active, discovery enabled, age range, gender, within 100mi (Haversine), excluded IDs, <strong>not blocked either direction</strong>.</li>
+          <li>Compatibility scored client-side by the <span class="mono">PersonaMatching</span> SPM package against the OCEAN profile.</li>
+          <li>High-scoring pairs become <span class="mono">connections</span> rows in <span class="mono">status=pending</span> with score + insight + shared themes.</li>
+          <li>Each pending connection then triggers an avatar-to-avatar exchange (Phase 3).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="glossary reveal">
+    <div class="glossary-head">
+      <div class="num">ii.</div>
+      <div>
+        <h3>Where this gets stored</h3>
+        <div class="sub">Tables touched in this phase.</div>
+      </div>
+    </div>
+    <div class="gloss-list">
+      <div class="gloss-row">
+        <div class="gloss-icon">a</div>
+        <div class="gloss-table">connections<span class="like">"the match log"</span></div>
+        <div class="gloss-desc">One row per pairing. Stores user_a, user_b, compatibility score, shared themes, story narrative, status (pending → revealed → accepted), and expiry.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">b</div>
+        <div class="gloss-table">blocks<span class="like">"the keep-away list"</span></div>
+        <div class="gloss-desc">Bidirectional — if either party has blocked the other, the discovery RPC will never surface them.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">c</div>
+        <div class="gloss-table">user_settings<span class="like">"per-person preferences"</span></div>
+        <div class="gloss-desc">Used to filter: <span class="mono">discovery_enabled</span>, age range, gender preference, distance cap.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="diagram-wrap reveal">
+    <div class="diagram-head">
+      <h4>The discovery funnel — all profiles to your daily five</h4>
+      <span class="right">Phase 02 · filter chain</span>
+    </div>
+    <div class="mermaid">
+flowchart TD
+    A[All profiles in Supabase] --> B{not self?}
+    B -->|no| X1[discard]
+    B -->|yes| C{is_active = true?}
+    C -->|no| X1
+    C -->|yes| D{discovery_enabled?}
+    D -->|no| X1
+    D -->|yes| E{age within filter?}
+    E -->|no| X1
+    E -->|yes| F{gender matches preference?}
+    F -->|no| X1
+    F -->|yes| G{within 100mi Haversine?}
+    G -->|no| X1
+    G -->|yes| H{in p_excluded_ids?}
+    H -->|yes| X1
+    H -->|no| I{blocked either direction?
+SERVER-SIDE}
+    I -->|yes| X1
+    I -->|no| J[candidate]
+    J --> K[score with PersonaMatching package]
+    K --> L[INSERT connections row · status=pending]
+    L --> M[trigger avatar-to-avatar chat]
+    </div>
+  </div>
+
+  <div class="rule rose reveal">
+    <div class="rule-label">Rule.</div>
+    <div class="rule-body">The block filter is enforced <strong>inside the database</strong>, not just on the client. Even if a future version of the app forgets to pass blocked IDs, blocked users can never appear in discovery.</div>
+  </div>
+
+  <details class="deep">
+    <summary>How compatibility is actually scored</summary>
+    <div class="body">
+      <p>Two OCEAN vectors (5-dimensional) are compared via cosine similarity, then weighted by domain factors: communication-style match, shared interests, complementary attachment styles, deal-breaker intersection.</p>
+      <p>The scorer lives in <span class="mono">Packages/PersonaMatching</span> and runs entirely on-device. No Claude call is needed for the match itself — Claude is reserved for the conversation generation in Phase 3.</p>
+      <p>High-score pairs (above an internal threshold) become <span class="mono">connections</span>. Marginal pairs are kept warm for the next day's batch.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════════ PHASE 03 — AVATAR CHAT -->
+<section id="p3" class="accent-jade">
+  <div class="chapter-rule reveal">
+    <div class="chapter-num"><span class="it">0</span>3<span class="slash">/</span><span style="font-size:.4em;color:var(--text-quiet)">06</span></div>
+    <div class="chapter-tag">Phase <span class="accent">Three</span> · Avatar-to-Avatar Chat</div>
+  </div>
+
+  <div class="chapter-intro reveal">
+    <div>
+      <h2 class="chapter">The avatars<br><span class="it">meet first.</span></h2>
+    </div>
+    <div>
+      <p class="lede">The hallmark of Persona. Before either human is asked to accept a match, their two AI avatars carry on a real, generated conversation. The exchange surfaces as a preview — proof of chemistry before any human commitment.</p>
+    </div>
+  </div>
+
+  <div class="stage reveal">
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="icons">
+            <svg width="14" height="9" viewBox="0 0 14 9" fill="currentColor"><rect x="0" y="6" width="2" height="3" rx=".5"/><rect x="3" y="4" width="2" height="5" rx=".5"/><rect x="6" y="2" width="2" height="7" rx=".5"/><rect x="9" y="0" width="2" height="9" rx=".5"/></svg>
+            <div style="width:22px;height:10px;border:1px solid currentColor;border-radius:2px;position:relative">
+              <div style="position:absolute;inset:1px;width:65%;background:currentColor;border-radius:1px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-body">
+          <div class="ph-tag">Your avatars · 6 turns</div>
+          <div style="display:flex;flex-direction:column;gap:7px;flex:1;overflow:hidden">
+            <div class="ph-bubble them">Hey — saw your profile. Sailing curious meets spreadsheet calm. How does that combo land for you?</div>
+            <div class="ph-bubble me">Honestly? It's why I haven't been on a boat. Need a spreadsheet for waves.</div>
+            <div class="ph-bubble them">The way you can't argue with the wind. Most honest thing I've done in a while.</div>
+            <div class="ph-bubble me">Oof, felt that. What else have you been honest about lately?</div>
+            <div class="ph-bubble them">That I'd rather have the awkward conversation than let things rot.</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <div class="ph-btn ghost" style="flex:1;margin:0">Pass</div>
+            <div class="ph-btn" style="flex:1.5;margin:0">Accept</div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item active"><div class="ico">⌂</div><span>Home</span></div>
+          <div class="tab-item"><div class="ico">◌</div><span>Chats</span></div>
+          <div class="tab-item"><div class="ico">◐</div><span>You</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="narration">
+      <div class="col layman">
+        <div class="col-tag">For everyone</div>
+        <h3>What the user reads</h3>
+        <ul>
+          <li>A match card with both first names and the full avatar exchange.</li>
+          <li>Reads like the two AIs really got each other — references to interests, gentle banter, real questions.</li>
+          <li>Below the exchange: <strong>Accept</strong> · <strong>Pass</strong>.</li>
+          <li>If accepted, the photo stays hidden until the real conversation deepens (Phase 5).</li>
+        </ul>
+      </div>
+      <div class="col tech">
+        <div class="col-tag">For engineers</div>
+        <h3>How the conversation is generated</h3>
+        <ul>
+          <li>A new <span class="mono">connections</span> row spawns an <span class="mono">avatar_conversations</span> row with both avatar IDs.</li>
+          <li>A matching engine alternates calls to <span class="mono">avatar-chat</span> — once as A, then as B — passing each side's persona context.</li>
+          <li>Claude Haiku replies in-character, capped at 1–3 sentences with a lowercase-default tone.</li>
+          <li>Each reply writes to <span class="mono">avatar_messages</span> with a monotonic <span class="mono">sequence_number</span>.</li>
+          <li>Every Claude call lands in <span class="mono">claude_chat_log</span>.</li>
+          <li>After ~6–12 turns, a summary + topics_discussed are written back to <span class="mono">avatar_conversations</span>.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="glossary reveal">
+    <div class="glossary-head">
+      <div class="num">iii.</div>
+      <div>
+        <h3>Where this gets stored</h3>
+        <div class="sub">Tables touched in this phase.</div>
+      </div>
+    </div>
+    <div class="gloss-list">
+      <div class="gloss-row">
+        <div class="gloss-icon">a</div>
+        <div class="gloss-table">avatar_conversations<span class="like">"the AI pre-chat"</span></div>
+        <div class="gloss-desc">One row per connection. Holds both avatar IDs, status, a summary, and the topics the AIs discussed.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">b</div>
+        <div class="gloss-table">avatar_messages<span class="like">"every AI line"</span></div>
+        <div class="gloss-desc">Each turn of the avatar-to-avatar conversation, with sender, content, tone, topic, and sequence number.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">c</div>
+        <div class="gloss-table">claude_chat_log<span class="like">"the training diary"</span></div>
+        <div class="gloss-desc">Every Claude round-trip from this phase is logged — full system prompt, message history, response, tokens, latency.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">d</div>
+        <div class="gloss-table">avatar_chat_usage<span class="like">"the daily meter"</span></div>
+        <div class="gloss-desc">Per-user, per-day call counter. Enforces 150/day free, 1000/day premium. Cap exceeded → 429.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="diagram-wrap reveal">
+    <div class="diagram-head">
+      <h4>How a simulated conversation is built, turn by turn</h4>
+      <span class="right">Phase 03 · generation loop</span>
+    </div>
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant ENG as Matching Engine
+    participant EF as avatar-chat (Edge)
+    participant CL as Claude Haiku
+    participant DB as Postgres
+
+    ENG->>DB: INSERT avatar_conversations (avatar_a, avatar_b)
+    loop 6-12 turns
+        Note over ENG: speak as Avatar A
+        ENG->>EF: mode=chat · context=A's persona<br/>history=[prev turns]
+        EF->>CL: system prompt = A's personality summary
+        CL-->>EF: A's next line (in character)
+        EF->>DB: INSERT avatar_messages (sender=A, seq=N)
+        EF->>DB: claude_chat_log row
+        Note over ENG: speak as Avatar B
+        ENG->>EF: mode=chat · context=B's persona
+        EF->>CL: system prompt = B's personality summary
+        CL-->>EF: B's next line
+        EF->>DB: INSERT avatar_messages (sender=B, seq=N+1)
+        EF->>DB: claude_chat_log row
+    end
+    ENG->>DB: UPDATE avatar_conversations.summary + topics_discussed
+    Note over DB: connection card now has the full preview
+    
+</div>
+  </div>
+
+  <div class="rule jade reveal">
+    <div class="rule-label">Rule.</div>
+    <div class="rule-body">The avatar speaks <strong>as the user's wingman</strong>, never as the user. It opens with curiosity, asks real questions, and never makes up facts about the human it represents.</div>
+  </div>
+
+  <div class="rule jade reveal">
+    <div class="rule-label">Rule.</div>
+    <div class="rule-body">The system prompt enforces a 1–3 sentence cap per reply, lowercase-default tone, and US-only crisis-line copy (911 · 988 · 741741) if the conversation veers into safety territory.</div>
+  </div>
+
+  <details class="deep">
+    <summary>What goes into the system prompt for each turn</summary>
+    <div class="body">
+      <p>Built fresh each call from <span class="mono">buildChatSystemPrompt(ctx)</span>:</p>
+      <pre>{
+  avatar_name, user_name, personality_summary,
+  conversation_topics, love_languages, core_values,
+  communication_style, humor_style, recent_memory_facts
+}</pre>
+      <p>The system block is sent with <span class="mono">cache_control: "ephemeral"</span>. Anthropic's prompt caching makes follow-up turns within a 5-minute window roughly 10× cheaper.</p>
+    </div>
+  </details>
+
+  <details class="deep">
+    <summary>Rate limits and cost controls</summary>
+    <div class="body">
+      <p><strong>Free tier:</strong> 150 Claude calls per user per day. <strong>Premium:</strong> 1000/day.</p>
+      <p>Enforced in <span class="mono">avatar_chat_usage</span> by the edge function before any Claude call fires. Cap exceeded returns 429 <span class="mono">{error:"rate_limited"}</span> and the client surfaces a friendly toast.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════════ PHASE 04 — MUTUAL ACCEPT -->
+<section id="p4" class="accent-lav">
+  <div class="chapter-rule reveal">
+    <div class="chapter-num"><span class="it">0</span>4<span class="slash">/</span><span style="font-size:.4em;color:var(--text-quiet)">06</span></div>
+    <div class="chapter-tag">Phase <span class="accent">Four</span> · Mutual Match</div>
+  </div>
+
+  <div class="chapter-intro reveal">
+    <div>
+      <h2 class="chapter">The handoff<br><span class="it">to humans.</span></h2>
+    </div>
+    <div>
+      <p class="lede">When both users tap Accept, the avatars step aside. A real conversation opens with openers seeded from what the AIs discussed — and both phones receive a "You matched!" notification within a second.</p>
+    </div>
+  </div>
+
+  <div class="stage reveal">
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="icons">
+            <svg width="14" height="9" viewBox="0 0 14 9" fill="currentColor"><rect x="0" y="6" width="2" height="3" rx=".5"/><rect x="3" y="4" width="2" height="5" rx=".5"/><rect x="6" y="2" width="2" height="7" rx=".5"/><rect x="9" y="0" width="2" height="9" rx=".5"/></svg>
+            <div style="width:22px;height:10px;border:1px solid currentColor;border-radius:2px;position:relative">
+              <div style="position:absolute;inset:1px;width:65%;background:currentColor;border-radius:1px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-body" style="justify-content:center;align-items:center;text-align:center;gap:18px">
+          <div style="font-size:3.5rem">✨</div>
+          <div class="ph-title serif italic" style="font-size:1.5rem;text-align:center">You matched<br>with Blair.</div>
+          <div class="ph-sub" style="text-align:center;max-width:80%">Say hi to kick things off. The chat opens with 3 suggested openers — picked from what your avatars talked about.</div>
+
+          <div style="width:100%;display:flex;flex-direction:column;gap:8px;margin-top:14px">
+            <div class="ph-field amber" style="text-align:left;line-height:1.4">What's the most honest thing you've done lately?</div>
+            <div class="ph-field" style="text-align:left;line-height:1.4">Spreadsheets meets sailing — pitch me your version of structured spontaneity.</div>
+            <div class="ph-field" style="text-align:left;line-height:1.4">If we cook tonight — recipe or improvise?</div>
+          </div>
+
+          <div class="ph-btn" style="width:100%">Open chat</div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="ico">⌂</div><span>Home</span></div>
+          <div class="tab-item active"><div class="ico">◌</div><span>Chats</span></div>
+          <div class="tab-item"><div class="ico">◐</div><span>You</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="narration">
+      <div class="col layman">
+        <div class="col-tag">For everyone</div>
+        <h3>What both users see</h3>
+        <ul>
+          <li>Reads the avatar exchange · taps <strong>Accept</strong>.</li>
+          <li>If the other person already accepted, both get an instant <strong>"You matched!"</strong> notification.</li>
+          <li>The conversation appears in <strong>Chats</strong> with 3 suggested openers drawn from the AI exchange.</li>
+          <li>Photo is still locked — engagement-gated reveal kicks in via real chat (Phase 5).</li>
+        </ul>
+      </div>
+      <div class="col tech">
+        <div class="col-tag">For engineers</div>
+        <h3>What fires server-side</h3>
+        <ul>
+          <li>User PATCHes <span class="mono">connections.status='accepted'</span> + <span class="mono">accepted_at</span> + <span class="mono">revealed_at</span> via own JWT.</li>
+          <li>Trigger <span class="mono">notify_on_connection_accepted</span> inserts <strong>two notification rows</strong> (one per user).</li>
+          <li>Client inserts a <span class="mono">conversations</span> row with <span class="mono">suggested_openers</span> derived from <span class="mono">avatar_conversations.topics_discussed</span>.</li>
+          <li>Realtime publication broadcasts both notification INSERTs to subscribed devices.</li>
+          <li>The notification rows are the persistence layer that APNs uses to send a real push when the app is backgrounded.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="glossary reveal">
+    <div class="glossary-head">
+      <div class="num">iv.</div>
+      <div>
+        <h3>Where this gets stored</h3>
+        <div class="sub">Tables touched in this phase.</div>
+      </div>
+    </div>
+    <div class="gloss-list">
+      <div class="gloss-row">
+        <div class="gloss-icon">a</div>
+        <div class="gloss-table">connections<span class="like">"the match log"</span></div>
+        <div class="gloss-desc">Status updated to <span class="mono">accepted</span>. Timestamps set: <span class="mono">accepted_at</span>, <span class="mono">revealed_at</span>.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">b</div>
+        <div class="gloss-table">conversations<span class="like">"the real-chat container"</span></div>
+        <div class="gloss-desc">One row created per accepted match. Holds the context summary, the 3 suggested openers, started_at, and a 7-day expires_at.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">c</div>
+        <div class="gloss-table">notifications<span class="like">"the inbox"</span></div>
+        <div class="gloss-desc">Two rows inserted by the trigger — one for each user. Type = <span class="mono">new_connection</span>. The handoff point for push delivery.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="diagram-wrap reveal">
+    <div class="diagram-head">
+      <h4>Mutual accept → real chat opens</h4>
+      <span class="right">Phase 04 · trigger fan-out</span>
+    </div>
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant A as User A
+    participant App as iOS App
+    participant DB as Postgres
+    participant TG as notify_on_
+connection_accepted
+    participant RT as Realtime WS
+    participant B as User B
+
+    A->>App: tap Accept
+    App->>DB: PATCH connections.status='accepted'<br/>accepted_at, revealed_at
+    DB->>TG: row UPDATE fires trigger
+    TG->>DB: INSERT notification for A
+    TG->>DB: INSERT notification for B
+    App->>DB: INSERT conversations<br/>+ suggested_openers
+    DB-->>RT: postgres_changes broadcast
+    RT-->>A: notification appears
+    RT-->>B: notification appears + match card transitions
+    Note over A,B: conversation visible in Chats tab
+    
+</div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════════ PHASE 05 — REAL CHAT -->
+<section id="p5" class="accent-copper">
+  <div class="chapter-rule reveal">
+    <div class="chapter-num"><span class="it">0</span>5<span class="slash">/</span><span style="font-size:.4em;color:var(--text-quiet)">06</span></div>
+    <div class="chapter-tag">Phase <span class="accent">Five</span> · Real Conversation + Photo Reveal</div>
+  </div>
+
+  <div class="chapter-intro reveal">
+    <div>
+      <h2 class="chapter">Human to<br><span class="it">human, live.</span></h2>
+    </div>
+    <div>
+      <p class="lede">From here on, the AIs are silent. Messages flow over Supabase Realtime with ~1-second delivery. Photos unlock as the conversation deepens. A 7-day window keeps things urgent — both sides can lock it to make it permanent.</p>
+    </div>
+  </div>
+
+  <div class="stage reveal">
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="icons">
+            <svg width="14" height="9" viewBox="0 0 14 9" fill="currentColor"><rect x="0" y="6" width="2" height="3" rx=".5"/><rect x="3" y="4" width="2" height="5" rx=".5"/><rect x="6" y="2" width="2" height="7" rx=".5"/><rect x="9" y="0" width="2" height="9" rx=".5"/></svg>
+            <div style="width:22px;height:10px;border:1px solid currentColor;border-radius:2px;position:relative">
+              <div style="position:absolute;inset:1px;width:65%;background:currentColor;border-radius:1px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-body">
+          <div style="display:flex;align-items:center;gap:10px;padding-bottom:8px;border-bottom:1px solid var(--line-soft);margin-bottom:2px">
+            <div class="ph-avatar amber" style="width:32px;height:32px;font-size:.85rem">B</div>
+            <div style="flex:1">
+              <div class="ph-name">Blair</div>
+              <div class="ph-meta">Photos in 3 messages 📷</div>
+            </div>
+            <div style="font-size:.65rem;color:var(--text-quiet)">6d left</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;flex:1;overflow:hidden;padding-top:6px">
+            <div class="ph-bubble them">hey alex, that opener was 🔥 — let's do it</div>
+            <div class="ph-bubble me">ha — okay, most honest thing this week: i told my boss i hated the rebrand</div>
+            <div class="ph-bubble them">oh that's huge. how'd they take it</div>
+            <div class="ph-bubble me">surprisingly well? we're redoing it.</div>
+            <div class="ph-bubble them">love that. okay your turn — ask me something real</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;padding:8px 12px;background:var(--bg-card);border-radius:18px;margin-top:4px">
+            <span style="color:var(--text-quiet);font-size:.72rem">Type a message…</span>
+            <span style="margin-left:auto;color:var(--amber);font-size:1rem">↑</span>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="ico">⌂</div><span>Home</span></div>
+          <div class="tab-item active"><div class="ico">◌</div><span>Chats</span></div>
+          <div class="tab-item"><div class="ico">◐</div><span>You</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="narration">
+      <div class="col layman">
+        <div class="col-tag">For everyone</div>
+        <h3>What the chat feels like</h3>
+        <ul>
+          <li><strong>Text, voice notes, image messages, emoji reactions</strong>, read receipts, typing indicators.</li>
+          <li><strong>Photo reveal</strong> celebrates with confetti + a toast once both sides have invested.</li>
+          <li><strong>7-day window</strong> creates urgency. <strong>Mutual lock</strong> (both tap the lock icon) makes it permanent.</li>
+          <li>Sending a message that's seen feels instant — the other person sees the text within a second.</li>
+        </ul>
+      </div>
+      <div class="col tech">
+        <div class="col-tag">For engineers</div>
+        <h3>What runs underneath</h3>
+        <ul>
+          <li>iOS opens one WebSocket on launch, subscribes to <span class="mono">realtime:public:messages</span> filtered by <span class="mono">conversation_id</span>.</li>
+          <li>Sending a message: POST to <span class="mono">messages</span> table → trigger <span class="mono">notify_on_new_message</span> inserts a <span class="mono">notifications</span> row → Realtime broadcasts both rows.</li>
+          <li>Mark-read: PATCH <span class="mono">messages.is_read=true</span> from the recipient → UPDATE event sent to sender.</li>
+          <li>Photo reveal: client tracks <span class="mono">userMessageCount</span>, hits a threshold, PATCHes <span class="mono">conversations.photo_revealed_at</span> for cross-device sync.</li>
+          <li>Mutual lock: <span class="mono">conversations.user_locked</span> + <span class="mono">partner_locked</span> both true → chat never expires.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="glossary reveal">
+    <div class="glossary-head">
+      <div class="num">v.</div>
+      <div>
+        <h3>Where this gets stored</h3>
+        <div class="sub">Tables touched in this phase.</div>
+      </div>
+    </div>
+    <div class="gloss-list">
+      <div class="gloss-row">
+        <div class="gloss-icon">a</div>
+        <div class="gloss-table">messages<span class="like">"every real chat line"</span></div>
+        <div class="gloss-desc">Each turn between the two humans. Type can be text, voice_note, image, system, or context_card. Tracks is_read + read_at.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">b</div>
+        <div class="gloss-table">conversations<span class="like">"the real-chat container"</span></div>
+        <div class="gloss-desc">Updated as the chat evolves: <span class="mono">last_message_at</span>, <span class="mono">photo_revealed_at</span>, lock state, status.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">c</div>
+        <div class="gloss-table">notifications<span class="like">"the inbox"</span></div>
+        <div class="gloss-desc">A new row per message for the recipient. Powers push delivery when the app is backgrounded.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">d</div>
+        <div class="gloss-table">Storage buckets<span class="like">"the file vault"</span></div>
+        <div class="gloss-desc">Voice notes go to <span class="mono">voice-notes</span> bucket, image messages to <span class="mono">chat-images</span>. Both private, RLS-guarded.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="diagram-wrap reveal">
+    <div class="diagram-head">
+      <h4>Sending a message — A types, B sees it within a second</h4>
+      <span class="right">Phase 05 · realtime path</span>
+    </div>
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant A as A's iPhone
+    participant DB as Postgres
+    participant TG as notify_on_
+new_message
+    participant RT as Realtime WS
+    participant B as B's iPhone
+
+    Note over A,B: both already subscribed to
+realtime:public:messages filter=conversation_id
+
+    A->>DB: INSERT messages (sender=A, content)
+    DB-->>A: 201 + row
+    DB->>TG: trigger fires
+    TG->>DB: INSERT notifications (user_id=B)
+    DB-->>RT: postgres_changes INSERT
+    RT-->>B: live event arrives ~1s
+    B->>B: append message · bump unreadCount
+    DB-->>RT: postgres_changes (notification)
+    RT-->>B: in-app badge updates
+    Note over B: B opens conversation
+    B->>DB: PATCH messages.is_read=true
+    DB-->>RT: postgres_changes UPDATE
+    RT-->>A: read tick appears
+    
+</div>
+  </div>
+
+  <div class="rule reveal">
+    <div class="rule-label">Rule.</div>
+    <div class="rule-body">Photo reveal is <strong>one-way</strong>. Once unlocked, it stays unlocked. Now persisted server-side — open on a second device and the photo is still visible.</div>
+  </div>
+
+  <div class="rule reveal">
+    <div class="rule-label">Rule.</div>
+    <div class="rule-body">The 7-day chat window creates urgency. <strong>Mutual lock</strong> = both users say "this is real, keep this open forever." Stored as two booleans on the <span class="mono">conversations</span> row.</div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════════ PHASE 06 — SAFETY -->
+<section id="p6" class="accent-rose">
+  <div class="chapter-rule reveal">
+    <div class="chapter-num"><span class="it">0</span>6<span class="slash">/</span><span style="font-size:.4em;color:var(--text-quiet)">06</span></div>
+    <div class="chapter-tag">Phase <span class="accent">Six</span> · Safety + Compliance</div>
+  </div>
+
+  <div class="chapter-intro reveal">
+    <div>
+      <h2 class="chapter">Mechanics<br>of <span class="it">trust.</span></h2>
+    </div>
+    <div>
+      <p class="lede">Block, report, delete account — all wired end-to-end with server-side enforcement and audit trails. Built to pass Apple review on the first attempt.</p>
+    </div>
+  </div>
+
+  <div class="stage reveal">
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="icons">
+            <svg width="14" height="9" viewBox="0 0 14 9" fill="currentColor"><rect x="0" y="6" width="2" height="3" rx=".5"/><rect x="3" y="4" width="2" height="5" rx=".5"/><rect x="6" y="2" width="2" height="7" rx=".5"/><rect x="9" y="0" width="2" height="9" rx=".5"/></svg>
+            <div style="width:22px;height:10px;border:1px solid currentColor;border-radius:2px;position:relative">
+              <div style="position:absolute;inset:1px;width:65%;background:currentColor;border-radius:1px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-body">
+          <div class="ph-tag">Settings</div>
+          <div class="ph-title serif italic" style="font-size:1.25rem">Your account.</div>
+
+          <div style="display:flex;flex-direction:column;gap:1px;background:var(--bg-card);border-radius:12px;overflow:hidden;margin-top:6px">
+            <div style="padding:13px 16px;display:flex;align-items:center;gap:10px;font-size:.74rem;color:var(--text)">
+              <span style="color:var(--text-quiet);width:18px">⛔</span>
+              <span>Blocked Users</span>
+              <span style="margin-left:auto;color:var(--text-quiet);font-size:.7rem">2</span>
+              <span style="color:var(--text-quiet)">›</span>
+            </div>
+            <div style="padding:13px 16px;display:flex;align-items:center;gap:10px;font-size:.74rem;color:var(--text);border-top:1px solid var(--line-soft)">
+              <span style="color:var(--text-quiet);width:18px">⚠</span>
+              <span>Report a problem</span>
+              <span style="margin-left:auto;color:var(--text-quiet)">›</span>
+            </div>
+            <div style="padding:13px 16px;display:flex;align-items:center;gap:10px;font-size:.74rem;color:var(--text);border-top:1px solid var(--line-soft)">
+              <span style="color:var(--text-quiet);width:18px">↩</span>
+              <span>Sign Out</span>
+              <span style="margin-left:auto;color:var(--text-quiet)">›</span>
+            </div>
+            <div style="padding:13px 16px;display:flex;align-items:center;gap:10px;font-size:.74rem;color:var(--rose);border-top:1px solid var(--line-soft)">
+              <span style="width:18px">🗑</span>
+              <span>Delete Account</span>
+              <span style="margin-left:auto">›</span>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;padding:14px;background:var(--rose-soft);border:1px solid rgba(201,122,153,.25);border-radius:12px;font-size:.68rem;color:var(--text-mute);line-height:1.5">
+            <strong style="color:var(--rose);display:block;margin-bottom:6px">Delete Account?</strong>
+            This will permanently erase your profile, avatar, personality data, and all conversations. This cannot be undone.
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="ico">⌂</div><span>Home</span></div>
+          <div class="tab-item"><div class="ico">◌</div><span>Chats</span></div>
+          <div class="tab-item active"><div class="ico">◐</div><span>You</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="narration">
+      <div class="col layman">
+        <div class="col-tag">For everyone</div>
+        <h3>How users stay safe</h3>
+        <ul>
+          <li><strong>Block</strong> · one tap from the profile menu. Blocked users vanish from your discovery deck immediately.</li>
+          <li><strong>Report</strong> · 6 categories: harassment, inappropriate, spam, fake profile, underage, other.</li>
+          <li><strong>Delete account</strong> · one confirmation, no email loop, no support ticket. Everything is gone.</li>
+          <li><strong>Age</strong> · enforced by date-of-birth picker + server-side validation. No exceptions.</li>
+        </ul>
+      </div>
+      <div class="col tech">
+        <div class="col-tag">For engineers</div>
+        <h3>How it's enforced</h3>
+        <ul>
+          <li><span class="mono">blocks</span> table is read by the <span class="mono">nearby_candidates</span> RPC — server-side filter.</li>
+          <li><span class="mono">reports</span> row inserted in <span class="mono">pending</span>; admins resolve via <span class="mono">admin_actions</span> audit log.</li>
+          <li>Account deletion calls the <span class="mono">delete-account</span> edge function → <span class="mono">auth.admin.deleteUser</span> → cascade deletes through every FK-linked table.</li>
+          <li>DOB &lt; 18 fails the <span class="mono">profiles_age_from_dob</span> trigger with a check_violation.</li>
+          <li>Every table has RLS. Users cannot read anyone else's notifications, settings, or personality data.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="glossary reveal">
+    <div class="glossary-head">
+      <div class="num">vi.</div>
+      <div>
+        <h3>Where this gets stored</h3>
+        <div class="sub">Tables touched in this phase.</div>
+      </div>
+    </div>
+    <div class="gloss-list">
+      <div class="gloss-row">
+        <div class="gloss-icon">a</div>
+        <div class="gloss-table">blocks<span class="like">"the keep-away list"</span></div>
+        <div class="gloss-desc">One row per block. Bidirectional check in the discovery RPC.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">b</div>
+        <div class="gloss-table">reports<span class="like">"the moderation queue"</span></div>
+        <div class="gloss-desc">Pending until an admin resolves. Linked to either a user or a message.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">c</div>
+        <div class="gloss-table">admin_actions<span class="like">"the audit log"</span></div>
+        <div class="gloss-desc">Every moderation action and self-deletion gets a row here. Forever.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="diagram-wrap reveal">
+    <div class="diagram-head">
+      <h4>Account deletion — App Store 5.1.1(v) compliant</h4>
+      <span class="right">Phase 06 · hard delete</span>
+    </div>
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant App as iOS App
+    participant EF as delete-account (Edge)
+    participant ADM as auth.admin
+    participant DB as Postgres
+
+    U->>App: Settings · Delete Account · confirm
+    App->>EF: POST /delete-account (Bearer JWT)
+    EF->>ADM: verify JWT · identify caller
+    EF->>DB: INSERT admin_actions audit row
+    EF->>ADM: deleteUser(caller_id)
+    ADM->>DB: DELETE auth.users (cascade)
+    DB->>DB: cascades through profiles · settings ·<br/>personality · avatars · connections ·<br/>messages · notifications · ...
+    EF->>DB: DELETE claude_chat_log WHERE user_id=caller
+    EF-->>App: 204
+    App->>App: sign out · return to auth screen
+    
+</div>
+  </div>
+
+  <div class="rule rose reveal">
+    <div class="rule-label">Rule.</div>
+    <div class="rule-body">The edge function identifies the caller from their JWT. There is <strong>no way</strong> for a user to delete anyone else's account. Verified in E2E phase 12.</div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════════ ARCHITECTURE -->
+<section id="arch" class="accent-lav">
+  <div class="chapter-rule reveal">
+    <div class="chapter-num"><span class="it">0</span>7<span class="slash">/</span><span style="font-size:.4em;color:var(--text-quiet)">09</span></div>
+    <div class="chapter-tag">Chapter <span class="accent">Seven</span> · Architecture</div>
+  </div>
+
+  <div class="chapter-intro reveal">
+    <div>
+      <h2 class="chapter">How the<br><span class="it">pieces fit.</span></h2>
+    </div>
+    <div>
+      <p class="lede">Four layers, each with a single clear responsibility. The iOS app is the only thing the user touches. Everything else is invisible — and that's the point.</p>
+    </div>
+  </div>
+
+  <div class="diagram-wrap reveal">
+    <div class="diagram-head">
+      <h4>The full system, end to end</h4>
+      <span class="right">Architecture · top-level</span>
+    </div>
+    <div class="mermaid">
+flowchart TB
+    subgraph CLIENT[iOS App · SwiftUI · iOS 17+ · Swift 6 strict concurrency]
+        direction TB
+        UI[Views: Auth · Discover · Chat · You · EditProfile]
+        DS[DataService
+MockDataService / LiveDataService]
+        SM[SupabaseManager]
+        RT[Realtime WS listener
+per-user channel]
+        UI --> DS
+        DS --> SM
+        DS --> RT
+    end
+
+    subgraph EDGE[Edge Functions · Deno · JWT-verified]
+        AC[avatar-chat
+intro + chat modes
+logs every Claude call]
+        DA[delete-account
+hard delete + audit]
+        WL[waitlist-signup]
+    end
+
+    subgraph SUPA[Supabase Backend]
+        AUTH[Auth · Apple OIDC + email]
+        DB[(Postgres · 16+ tables
+RLS on every table
+Triggers: handle_new_user
+notify_on_message
+notify_on_accept
+age_from_dob)]
+        REALTIME[Realtime publication:
+messages · connections ·
+notifications]
+        STOR[Storage: avatars · photos ·
+voice notes · chat images]
+    end
+
+    subgraph EXT[External]
+        CL[Anthropic
+Claude Haiku 4.5]
+        APPLE[Apple · Sign-In · APNs · StoreKit]
+    end
+
+    SM -->|REST + JWT| DB
+    SM -.WebSocket.-> REALTIME
+    SM -->|HTTPS| AC
+    SM -->|HTTPS| DA
+    SM --> AUTH
+    SM --> STOR
+    AUTH -.OIDC.-> APPLE
+    AC -->|prompt-cached| CL
+    AC --> DB
+    DA --> DB
+    </div>
+  </div>
+
+  <div class="arch-grid">
+    <div class="arch-card reveal">
+      <div class="num">A · iOS</div>
+      <h3>The app the user holds.</h3>
+      <p>SwiftUI on iOS 17+. 30+ screens, 11 SPM packages, every <span class="mono">ObservableObject</span> on the main actor. Models are <span class="mono">Sendable</span>, repositories are <span class="mono">actor</span>s. Built for Swift 6 strict concurrency.</p>
+      <div class="tags">
+        <div class="tag">SwiftUI</div><div class="tag">Swift 6</div>
+        <div class="tag">11 SPM packages</div><div class="tag">@MainActor</div>
+      </div>
+    </div>
+
+    <div class="arch-card reveal delay-1">
+      <div class="num">B · Edge</div>
+      <h3>The brain in the middle.</h3>
+      <p>Three Deno edge functions. <span class="mono">avatar-chat</span> talks to Claude and logs every round. <span class="mono">delete-account</span> handles hard deletion. JWTs are verified before any database write. Anthropic prompt caching cuts cost ~10× on cached turns.</p>
+      <div class="tags">
+        <div class="tag">Deno</div><div class="tag">Claude Haiku 4.5</div>
+        <div class="tag">prompt cache</div><div class="tag">JWT-verified</div>
+      </div>
+    </div>
+
+    <div class="arch-card reveal delay-2">
+      <div class="num">C · Database</div>
+      <h3>The source of truth.</h3>
+      <p>Postgres with Row Level Security on every table. 12+ triggers handle fan-out: signup creates 6 child rows, message INSERT creates a notification, connection accept creates two notifications, DOB writes derive age and reject &lt;18.</p>
+      <div class="tags">
+        <div class="tag">Postgres</div><div class="tag">RLS</div>
+        <div class="tag">12+ triggers</div><div class="tag">16 tables</div>
+      </div>
+    </div>
+
+    <div class="arch-card reveal delay-3">
+      <div class="num">D · Realtime</div>
+      <h3>The live wire.</h3>
+      <p>One WebSocket per device subscribes to <span class="mono">postgres_changes</span> on <span class="mono">messages</span>, <span class="mono">connections</span>, and <span class="mono">notifications</span>. Verified ~1s delivery in both directions during end-to-end tests.</p>
+      <div class="tags">
+        <div class="tag">WebSocket</div><div class="tag">postgres_changes</div>
+        <div class="tag">~1s latency</div><div class="tag">3 tables published</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════════ PERSONA AI -->
+<section id="ai" class="accent-jade">
+  <div class="chapter-rule reveal">
+    <div class="chapter-num"><span class="it">0</span>8<span class="slash">/</span><span style="font-size:.4em;color:var(--text-quiet)">09</span></div>
+    <div class="chapter-tag">Chapter <span class="accent">Eight</span> · The Moat</div>
+  </div>
+
+  <div class="chapter-intro reveal">
+    <div>
+      <h2 class="chapter">Persona AI —<br>on the <span class="it">phone.</span></h2>
+    </div>
+    <div>
+      <p class="lede">Today every avatar chat is an Anthropic API call. The end state: a 1B-parameter model trained on our logged conversations, running on-device. Free, offline, private. Claude becomes the fallback for hard turns.</p>
+    </div>
+  </div>
+
+  <div class="timeline-wrap reveal">
+    <div class="timeline-line"></div>
+    <div class="timeline">
+      <div class="t-step done">
+        <div class="ph-num">Phase 01</div>
+        <h4>Logging infrastructure.</h4>
+        <p>Every Claude round captured to <span class="mono">claude_chat_log</span> — model, full prompt, history, response, tokens, latency.</p>
+        <div class="stamp">Shipped · 2026-05-12</div>
+      </div>
+      <div class="t-step next">
+        <div class="ph-num">Phase 02</div>
+        <h4>Export pipeline.</h4>
+        <p>Dump · dedupe · clean · format for ChatML or Llama-3 chat template. ~1 day of work once we have ≥10k logged turns.</p>
+        <div class="stamp">Next</div>
+      </div>
+      <div class="t-step">
+        <div class="ph-num">Phase 03</div>
+        <h4>Routing layer.</h4>
+        <p>A <span class="mono">LocalChatProvider</span> protocol in the existing PersonaAI package. Stub today, real model swaps in seamlessly later.</p>
+        <div class="stamp">~2 days · parallel</div>
+      </div>
+      <div class="t-step">
+        <div class="ph-num">Phase 04</div>
+        <h4>Train Persona AI.</h4>
+        <p>LoRA fine-tune on Llama 3.2 1B (or Gemma 2 / Phi-3.5). Held-out eval judged by Claude.</p>
+        <div class="stamp">~2 weeks · ML work</div>
+      </div>
+      <div class="t-step">
+        <div class="ph-num">Phase 05</div>
+        <h4>On-device inference.</h4>
+        <p>MLX-Swift bundled with the app. Int4-quantized ~300MB, lazy-downloaded on first run. Router escalates low-confidence turns to Claude.</p>
+        <div class="stamp">~3 weeks · iOS</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="diagram-wrap reveal">
+    <div class="diagram-head">
+      <h4>How the future routing layer will work</h4>
+      <span class="right">Persona AI · Phase 3+</span>
+    </div>
+    <div class="mermaid">
+flowchart LR
+    U[User message] --> R[ChatRouter]
+    R --> L[LocalChatProvider
+Persona AI · on device]
+    L --> CONF{confidence ≥ 0.7?}
+    CONF -->|yes ~80%| OUT[Use local reply]
+    CONF -->|no ~20%| CL[Escalate to Claude Haiku]
+    CL --> OUT
+    OUT --> LOG[Log both attempts
+to claude_chat_log]
+    </div>
+  </div>
+
+  <div class="arch-grid">
+    <div class="arch-card reveal">
+      <div class="num">Cost today</div>
+      <h3>$0.001 – 0.01 per turn.</h3>
+      <p>Anthropic Haiku pricing. Climbs with scale. Every avatar-to-avatar exchange, every onboarding turn, every wingman chat costs us money — variable per active user.</p>
+    </div>
+    <div class="arch-card reveal delay-1">
+      <div class="num">Cost on-device</div>
+      <h3>$0 marginal.</h3>
+      <p>Inference on the user's iPhone. No API. No round-trip. Battery is the only resource we spend.</p>
+    </div>
+    <div class="arch-card reveal delay-2">
+      <div class="num">Privacy</div>
+      <h3>Conversations stay local.</h3>
+      <p>The wingman chat never leaves the phone. Major differentiator for both marketing and legal in a category where trust is the whole product.</p>
+    </div>
+    <div class="arch-card reveal delay-3">
+      <div class="num">Offline</div>
+      <h3>Works on the subway.</h3>
+      <p>One of the few dating apps that does. In a category dominated by online-only experiences, this is a hard-to-copy feature.</p>
+    </div>
+  </div>
+
+  <div class="rule jade reveal">
+    <div class="rule-label">The bet.</div>
+    <div class="rule-body">By logging every Claude call from day one, we build the training dataset that eventually frees us from the API. Competitors who never logged will have to start from scratch. <strong>This is the moat.</strong></div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════════ STATE OF PROD -->
+<section id="state">
+  <div class="chapter-rule reveal">
+    <div class="chapter-num"><span class="it">0</span>9<span class="slash">/</span><span style="font-size:.4em;color:var(--text-quiet)">09</span></div>
+    <div class="chapter-tag">Chapter <span class="accent">Nine</span> · State of Production</div>
+  </div>
+
+  <div class="chapter-intro reveal">
+    <div>
+      <h2 class="chapter">What's live<br><span class="it">right now.</span></h2>
+    </div>
+    <div>
+      <p class="lede">As of 2026-05-19. Tested end-to-end against the live Supabase project. Every check is reproducible from the harness in <span class="mono">/tmp/persona_e2e/</span>.</p>
+    </div>
+  </div>
+
+  <div class="narration reveal">
+    <div class="col layman">
+      <div class="col-tag">Solid · ready for submission</div>
+      <h3>What's in the build today</h3>
+      <ul>
+        <li>Full <strong>signup → match → real chat</strong> pipeline verified end-to-end</li>
+        <li>Realtime delivery confirmed both directions at <strong>~1s</strong></li>
+        <li>RLS isolation tested cross-user — no leakage</li>
+        <li>Cascade delete cleans <strong>12+ tables</strong> on account deletion</li>
+        <li>Rate limiting works (free 150/day, premium 1000/day)</li>
+        <li>Persona AI logging captures every Claude call</li>
+        <li>Block enforcement now server-side in the discovery RPC</li>
+        <li>Notification triggers fire on accept + new message</li>
+        <li><strong>App Store compliance:</strong> DOB, T&C gate, account delete, block management — all live</li>
+      </ul>
+    </div>
+    <div class="col tech">
+      <div class="col-tag">Sprint candidates · next up</div>
+      <h3>What to build next</h3>
+      <ul>
+        <li>APNs sender wired to the <span class="mono">notifications</span> table</li>
+        <li>Persona AI Phase 2 — export pipeline (~1 day when ≥10k turns)</li>
+        <li>Persona AI Phase 3 — <span class="mono">LocalChatProvider</span> + router (~2 days, parallel)</li>
+        <li>Empty states + offline error messaging across main views</li>
+        <li>Premium gating audit now that all users have subscription rows</li>
+        <li>Cross-device sync of mutual lock + read receipts via Realtime</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="big">Your avatar <span class="accent">dates for you.</span></div>
+  <div>Persona · built with iOS · SwiftUI · Supabase · Anthropic Claude</div>
+  <div style="margin-top:6px">12 / 12 E2E phases green · 5 migrations applied · 1 edge function deployed today</div>
+  <div style="margin-top:24px;font-family:var(--mono);font-size:.7rem;letter-spacing:.05em">2026-05-19 · Tarsit Group</div>
+</footer>
+
+<!-- ═════════════════════════════════════════════════════════════════ SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad:false,
+    securityLevel:'loose',
+    theme:'base',
+    themeVariables:{
+      darkMode:true,
+      fontFamily:"'Geist', system-ui, sans-serif",
+      fontSize:'14px',
+      background:'#11161e',
+      primaryColor:'#161c26',
+      primaryTextColor:'#f0e8d6',
+      primaryBorderColor:'#3a4358',
+      lineColor:'#d4a356',
+      secondaryColor:'#11161e',
+      tertiaryColor:'#1a2030',
+      noteBkgColor:'#2a2118',
+      noteTextColor:'#eac57f',
+      noteBorderColor:'#a17e3b',
+      actorBkg:'#161c26',
+      actorBorder:'#d4a356',
+      actorTextColor:'#f0e8d6',
+      signalColor:'#a2a8b6',
+      signalTextColor:'#f0e8d6',
+      labelBoxBkgColor:'#161c26',
+      labelBoxBorderColor:'#d4a356',
+      labelTextColor:'#f0e8d6',
+      loopTextColor:'#eac57f',
+      activationBorderColor:'#d4a356',
+      activationBkgColor:'#2a2118',
+      sequenceNumberColor:'#0a0e14'
+    },
+    flowchart:{ curve:'basis', padding:24, useMaxWidth:true, htmlLabels:true },
+    sequence:{ actorMargin:55, boxMargin:12, messageMargin:42, mirrorActors:false }
+  });
+
+  // ─── Render Mermaid diagrams explicitly (more reliable than startOnLoad) ───
+  async function renderDiagrams() {
+    const nodes = document.querySelectorAll('.mermaid');
+    for (let i = 0; i < nodes.length; i++) {
+      const el = nodes[i];
+      const src = el.textContent.trim();
+      const id = 'mmd-' + i;
+      try {
+        const { svg } = await mermaid.render(id, src);
+        el.innerHTML = svg;
+        el.setAttribute('data-rendered', 'true');
+      } catch (err) {
+        console.error('Mermaid render failed for diagram', i, err);
+        el.innerHTML = '<div style="padding:18px;background:#2a1c1c;border:1px solid #6a3a3a;border-radius:10px;color:#d97a7a;font-family:monospace;font-size:.78rem;white-space:pre-wrap">⚠ Diagram failed to render. Source:\n\n' + src.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])) + '</div>';
+      }
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderDiagrams);
+  } else {
+    renderDiagrams();
+  }
+
+  // ─── Reveal on scroll ───
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold:0.1, rootMargin:'0px 0px -80px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // ─── Nav progress ───
+  const sections = ['hero','p1','p2','p3','p4','p5','p6','arch','ai','state']
+    .map(id => document.getElementById(id)).filter(Boolean);
+  const labels = {hero:'00 / 09 · Cover', p1:'01 / 09 · Onboarding', p2:'02 / 09 · Discovery',
+                  p3:'03 / 09 · Avatar Chat', p4:'04 / 09 · Match', p5:'05 / 09 · Real Chat',
+                  p6:'06 / 09 · Safety', arch:'07 / 09 · Architecture',
+                  ai:'08 / 09 · Persona AI', state:'09 / 09 · Production'};
+  const navStep = document.getElementById('navStep');
+  const bar = document.querySelector('.nav-progress .bar');
+
+  function updateProgress() {
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = Math.max(0, Math.min(100, (window.scrollY / docHeight) * 100));
+    bar.style.setProperty('--p', pct + '%');
+
+    // Find current section
+    let current = sections[0];
+    const mid = window.scrollY + window.innerHeight * 0.4;
+    sections.forEach(s => {
+      if (s.offsetTop <= mid) current = s;
+    });
+    if (navStep && labels[current.id]) navStep.textContent = labels[current.id];
+  }
+  window.addEventListener('scroll', updateProgress, {passive:true});
+  updateProgress();
+</script>
+
+</body>
+</html>
