@@ -753,7 +753,7 @@
       <div class="sub">signup to chat</div>
     </div>
     <div class="hero-stat reveal in delay-1">
-      <div class="num">16<span class="it">+</span></div>
+      <div class="num">18<span class="it">+</span></div>
       <div class="lbl">Backend tables</div>
       <div class="sub">all locked by RLS</div>
     </div>
@@ -988,11 +988,16 @@ sequenceDiagram
 
   <div class="chapter-intro reveal">
     <div>
-      <h2 class="chapter">Find a<br><span class="it">few good</span> humans.</h2>
+      <h2 class="chapter">Five chats.<br><span class="it">One week.</span></h2>
     </div>
     <div>
-      <p class="lede">No infinite swipe deck. A small, daily handful of candidates surface — filtered by geography, preferences, blocks, and personality compatibility. Quality over quantity, by design.</p>
+      <p class="lede">No infinite swipe deck. Every <strong>Thursday at 12:00 ET</strong>, the app fills your roster with up to <strong>5 chats</strong> (10 for premium). Mutually-locked chats carry over; the rest end at refresh. Pass on someone and they're permanently excluded — quietly, both directions.</p>
     </div>
+  </div>
+
+  <div class="rule rose reveal" style="margin-top:0;margin-bottom:24px">
+    <div class="rule-label">The week.</div>
+    <div class="rule-body"><strong>Thursday 12:00 ET</strong> — the system fills empty slots up to 5 (free) or 10 (premium). <strong>Mutual lock</strong> → chat stays. <strong>No lock</strong> → chat ends at next refresh. <strong>Pass</strong> → that person never surfaces again, for either of you.</div>
   </div>
 
   <div class="stage reveal">
@@ -1055,23 +1060,26 @@ sequenceDiagram
     <div class="narration">
       <div class="col layman">
         <div class="col-tag">For everyone</div>
-        <h3>What the user sees</h3>
+        <h3>How the week works</h3>
         <ul>
-          <li>Opens <strong>Home</strong> → ~5 candidate cards per day on the free tier.</li>
-          <li>Each card teases <strong>shared themes</strong>, a <strong>compatibility score</strong>, and a snippet of the avatar exchange.</li>
-          <li>The deck is intentionally small — when it's exhausted, the screen says <em>"Come back tomorrow."</em></li>
-          <li>Tapping a card opens the full avatar-to-avatar transcript (Phase 3).</li>
+          <li>Sign up → your <strong>first 5 chats</strong> arrive immediately. No waiting.</li>
+          <li>Each chat is a real conversation with someone — their avatar already met yours.</li>
+          <li>Every Thursday at noon ET, empty slots refill. The header shows the countdown.</li>
+          <li>Don't click with someone? Tap <strong>Pass</strong>. They never appear again — for either of you.</li>
+          <li>Click hard? <strong>Lock the chat</strong>. If you both lock, it stays forever and counts as one of your 5.</li>
+          <li>Changed your mind on a locked chat? <strong>Initiate unlock</strong> → applies at next Thursday, partner gets 24h+ to respond.</li>
         </ul>
       </div>
       <div class="col tech">
         <div class="col-tag">For engineers</div>
         <h3>What runs in the database</h3>
         <ul>
-          <li>Client calls Postgres function <span class="mono">nearby_candidates(p_user_id, lat, lon, ...)</span>.</li>
-          <li>Server applies a filter chain: not self, active, discovery enabled, age range, gender, within 100mi (Haversine), excluded IDs, <strong>not blocked either direction</strong>.</li>
-          <li>Compatibility scored client-side by the <span class="mono">PersonaMatching</span> SPM package against the OCEAN profile.</li>
-          <li>High-scoring pairs become <span class="mono">connections</span> rows in <span class="mono">status=pending</span> with score + insight + shared themes.</li>
-          <li>Each pending connection then triggers an avatar-to-avatar exchange (Phase 3).</li>
+          <li><span class="mono">pg_cron</span> fires <span class="mono">weekly_refresh()</span> every Thursday at <strong>16:00 UTC</strong>.</li>
+          <li>Per user: process pending unlocks → expire non-mutual chats → count survived locks → fill <span class="mono">max - locked</span> new slots.</li>
+          <li><span class="mono">nearby_candidates</span> RPC filters: active, discovery enabled, within 100mi (Haversine), gender, blocks <strong>and passed_users — bidirectional</strong>.</li>
+          <li>New chats: <span class="mono">connections</span> row + <span class="mono">avatar_conversations</span> row created in a single transaction.</li>
+          <li>Slot ledger: every refresh writes a <span class="mono">user_weekly_slots</span> row for analytics + per-user cap lookup.</li>
+          <li>Tier: <span class="mono">user_slot_cap(user_id)</span> returns 5 (free) or 10 (premium) based on the latest <span class="mono">subscriptions</span> row.</li>
         </ul>
       </div>
     </div>
@@ -1089,15 +1097,25 @@ sequenceDiagram
       <div class="gloss-row">
         <div class="gloss-icon">a</div>
         <div class="gloss-table">connections<span class="like">"the match log"</span></div>
-        <div class="gloss-desc">One row per pairing. Stores user_a, user_b, compatibility score, shared themes, story narrative, status (pending → revealed → accepted), and expiry.</div>
+        <div class="gloss-desc">One row per pairing. Stores user_a, user_b, compatibility score, shared themes, status (pending → accepted → declined/passed), and expiry.</div>
       </div>
       <div class="gloss-row">
         <div class="gloss-icon">b</div>
-        <div class="gloss-table">blocks<span class="like">"the keep-away list"</span></div>
-        <div class="gloss-desc">Bidirectional — if either party has blocked the other, the discovery RPC will never surface them.</div>
+        <div class="gloss-table">passed_users<span class="like">"the never-show list"</span></div>
+        <div class="gloss-desc">Bidirectional permanent exclusion. When someone passes on a chat, the system inserts <em>two</em> rows — one each way — so the asymmetry doesn't leak. The discovery RPC reads this on every query.</div>
       </div>
       <div class="gloss-row">
         <div class="gloss-icon">c</div>
+        <div class="gloss-table">user_weekly_slots<span class="like">"the weekly ledger"</span></div>
+        <div class="gloss-desc">One row per user per Thursday. Tracks slot_max, locked_carryover, new_chats_created, refreshed_at. Powers the "X chats this week" UI + product analytics.</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">d</div>
+        <div class="gloss-table">blocks<span class="like">"the keep-away list"</span></div>
+        <div class="gloss-desc">Bidirectional, but explicit. Different from <span class="mono">passed_users</span> — block = "hostile, never communicate." Pass = "soft no, but final."</div>
+      </div>
+      <div class="gloss-row">
+        <div class="gloss-icon">e</div>
         <div class="gloss-table">user_settings<span class="like">"per-person preferences"</span></div>
         <div class="gloss-desc">Used to filter: <span class="mono">discovery_enabled</span>, age range, gender preference, distance cap.</div>
       </div>
@@ -1106,7 +1124,25 @@ sequenceDiagram
 
   <div class="diagram-wrap reveal">
     <div class="diagram-head">
-      <h4>The discovery funnel — all profiles to your daily five</h4>
+      <h4>The weekly refresh — Thursday at 16:00 UTC</h4>
+      <span class="right">Phase 02 · refresh job</span>
+    </div>
+    <div class="mermaid">
+flowchart TD
+    CRON[pg_cron fires<br/>weekly_refresh<br/>Thursday 16:00 UTC] --> EACH[for each active user]
+    EACH --> U1[apply pending unlocks<br/>flip locks off]
+    U1 --> U2[expire non-mutually-locked<br/>chats from prior week]
+    U2 --> U3[count surviving locks<br/>= slots already taken]
+    U3 --> U4[new_slots = max - locked]
+    U4 --> NC[run nearby_candidates<br/>RPC]
+    NC --> CREATE[create connection +<br/>avatar_conversation rows]
+    CREATE --> LEDGER[write user_weekly_slots<br/>ledger row]
+    </div>
+  </div>
+
+  <div class="diagram-wrap reveal">
+    <div class="diagram-head">
+      <h4>The discovery filter — all profiles to your candidates</h4>
       <span class="right">Phase 02 · filter chain</span>
     </div>
     <div class="mermaid">
@@ -1125,10 +1161,11 @@ flowchart TD
     G -->|no| X1
     G -->|yes| H{in p_excluded_ids?}
     H -->|yes| X1
-    H -->|no| I{blocked either direction?
-SERVER-SIDE}
+    H -->|no| I{blocked either direction?<br/>SERVER-SIDE}
     I -->|yes| X1
-    I -->|no| J[candidate]
+    I -->|no| P{passed either direction?<br/>permanent · bidirectional}
+    P -->|yes| X1
+    P -->|no| J[candidate]
     J --> K[score with PersonaMatching package]
     K --> L[INSERT connections row · status=pending]
     L --> M[trigger avatar-to-avatar chat]
